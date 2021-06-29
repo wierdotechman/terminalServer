@@ -1,0 +1,34 @@
+<html>
+	<head>
+		<title>Terminal Server</title>
+		<script src="js/jquery-1.10.2.js"></script>
+		<script src="socket.io/socket.io.js"></script>
+		<script>
+			$(document).ready(
+				function(ev) {
+					var socket = io();
+					
+					$('.stdin').on('keyup', function(ev) {
+						if (ev.which === 13) {
+							var text = $('.stdin').val();
+							$('.stdin').val('');
+							$('.stdout').append('<b>' + text+ '</b><br/>');
+							socket.emit('stdin', text + '\n');
+						}
+					});
+					
+					socket.on('stdout', function(data) {
+						console.log('stdout:', data);
+						$('.stdout').append(data.data);
+						var objDiv = $('body')[0];
+						objDiv.scrollTop = objDiv.scrollHeight;
+					})
+				}
+			);
+		</script>
+	</head>
+	<body>
+		<div class="stdout" style="white-space: pre; font-family: Courier New;"></div>
+		<input class="stdin" style="border: none; width: 100%; background-color: rgba(0, 0, 0, 0.1);"/>
+	</body>
+</html>
